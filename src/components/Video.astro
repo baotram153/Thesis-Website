@@ -2,21 +2,28 @@
 import type { HTMLAttributes } from "astro/types";
 interface Props extends HTMLAttributes<"video"> {
   src: string;
+  square?: boolean;
 }
 
 const {
   src,
+  square = false,
   controls = true,
   loop = true,
   playsinline = true,
   muted = true,
   autoplay = true,
+  class: className,
   ...videoProps
 } = Astro.props;
 ---
 
 <video
-  class="aspect-video h-auto w-full rounded-lg"
+  class:list={[
+    "h-auto w-full rounded-lg",
+    square ? "aspect-square object-cover" : "aspect-video",
+    className,
+  ]}
   src={src}
   controls={controls}
   loop={loop}

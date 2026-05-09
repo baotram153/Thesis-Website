@@ -1,4 +1,5 @@
 export type Author = {
+  role?: string;
   name: string;
   url?: string;
   institution?: string;

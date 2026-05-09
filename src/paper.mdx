@@ -1,36 +1,23 @@
 ---
-title: Academic Project Page Template
+title: Teacher-Student Model for Motion Planning in Autonomous Driving
 authors:
-  - name: Roman Hauksson
-    url: https://roman.technology
-    institution: University of Texas at Dallas
-    notes: ["*", †]
-  - name: Author Two
-    institution: Institution Two
-    notes: ["*", †]
-  - name: Author Three
-    institution: Institution Three
-    notes: ["*"]
-  - name: Author Four
-    institution: Institution Four
-conference: Conference Name
-notes:
-  - symbol: "*"
-    text: author note one
-  - symbol: †
-    text: author note two
+  - role: Student
+    name: Dang Ngoc Bao Tram
+  - role: Supervisor
+    name: Nguyen Duc Dung
+conference:
 links:
-  - name: Paper
+  - name: Report
     url: https://github.com/RomanHauksson/academic-project-astro-template
     icon: ri:file-pdf-2-line
-  - name: Code
-    url: https://github.com/RomanHauksson/academic-project-astro-template
-    icon: ri:github-line
-  - name: arXiv
-    url: https://github.com/RomanHauksson/academic-project-astro-template
-    icon: academicons:arxiv
+  # - name: Code
+  #   url: https://github.com/RomanHauksson/academic-project-astro-template
+  #   icon: ri:github-line
+  # - name: arXiv
+  #   url: https://github.com/RomanHauksson/academic-project-astro-template
+  #   icon: academicons:arxiv
   - name: Slides
-    url: https://github.com/RomanHauksson/academic-project-astro-template
+    url: https://docs.google.com/presentation/d/1NUaVFiBCx5-FTSut_XWcewtNfJAwZ64bDpIdZQXWcgw/edit?usp=sharing
     icon: ri:slideshow-2-line
 
 # The color theme of the page. Defaults to "device" (the preference set in the user's brower or operating system). Setting this to "light" or "dark" will override the user's preference. This is useful if your figures only look good in one theme.
@@ -40,7 +27,7 @@ theme: device
 favicon: favicon.svg
 
 # These keys are optional. If a link to your project page is in a Google search result, text message, or social media post, it will often appear as a "link preview card" based on its title, description, favicon, and thumbnail. After you publish your page, you can double check that these previews look right using [this tool](https://linkpreview.xyz/)
-description: Simple project page template for your research paper, built with Astro and Tailwind
+description: My thesis website
 thumbnail: screenshot-light.png
 ---
 
@@ -58,151 +45,242 @@ import Wide from "./components/Wide.astro";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/starwind/tabs";
 import { Comparison } from "./components/Comparison.tsx";
 
-import outside from "./assets/outside.mp4";
+{/* // import outside from "./assets/outside.mp4"; */}
+import meta_video from "./assets/meta_video.mp4"
 import dogsDiffc from "./assets/dogs-diffc.png"
 import dogsTrue from "./assets/dogs-true.png"
 import dogsMsillm from "@/assets/dogs-msillm.jpg"
+import compare1 from "@/assets/compare1.mp4"
+import compare2 from "@/assets/compare2.mp4"
+import compare3 from "@/assets/compare3.mp4"
 
-<Video src={outside} />
+import park_cut from "@/assets/park_cut.mp4"
+import non_sig_junction_right from "@/assets/non_sig_junction_right.mp4"
+import sig_junction_left from "@/assets/sig_junction_left.mp4"
+import park_exit from "@/assets/park_exit.mp4"
+import static_cut from "@/assets/static_cutin.mp4"
+import highway_exit_left from "@/assets/highway_exit_left.mp4"
+import highway_exit_right from "@/assets/highway_exit_right.mp4"
+import ped_cross from "@/assets/ped_cross.mp4"
+import control_loss from "@/assets/control_loss.mp4"
+
+import rollout_buffer from "@/assets/rollout_buffer.mp4"
+import buffer_1 from "@/assets/buffer_1.png"
+import buffer_2 from "@/assets/buffer_2.png"
+import buffer_3 from "@/assets/buffer_3.png"
+import buffer_4 from "@/assets/buffer_4.png"
+import buffer_5 from "@/assets/buffer_5.png"
+import buffer_6 from "@/assets/buffer_6.png"
+
+import framework from "@/assets/framework.png"
+
+
+<Video src={meta_video} />
 
 <HighlightedSection>
 
 ## Abstract
 
-This is a template you can use to create a professional project page for your research paper. [See the code for the template and instructions on how to use it yourself on GitHub](https://github.com/RomanHauksson/academic-project-astro-template). It's made with the [Astro web framework](https://astro.build/) and styled with [Tailwind](https://tailwindcss.com/). You write the content in [MDX](https://mdxjs.com/), which enables markdown formatting like **bold**, _italics_, and ~strikethrough~, as well as custom components like <SmallCaps>small caps.</SmallCaps>
+[End-to-end autonomous driving](https://github.com/opendrivelab/end-to-end-autonomous-driving) policies have demonstrated strong performance by directly mapping raw sensor observations to low-level control commands. However, many state-of-the-art models rely on large network architectures and extensive computational resources, limiting their applicability in real-time and embedded systems. This thesis focuses on the development of a **lightweight end-to-end driving policy** that achieves **competitive performance** while significantly reducing model complexity.
 
+We propose a training framework that combines [knowledge distillation](https://arxiv.org/pdf/2006.05525) and [reinforcement learning](https://web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf) fine-tuning to bridge the performance gap between high-capacity teacher models and efficient student policies. In the distillation stage, a compact student network is trained to imitate the behavior of a stronger teacher. This process provides a stable baseline that mitigates optimization difficulty and reduces sample inefficiency during subsequent learning. After that, we further refine the student model through reinforcement learning fine-tuning. By allowing direct interaction with the environment, reinforcement learning enables the policy to adapt beyond imitation, improving [robustness and causal reasoning](https://arxiv.org/pdf/2306.16927#subsection.4.8) while preserving the efficiency of the lightweight architecture. This combination allows the student to retain the teacher’s structured behavior while autonomously optimizing performance under closed-loop feedback.
+
+All methods are evaluated in a [closed-loop simulation environment](https://github.com/Thinklab-SJTU/Bench2Drive#:~:text=%5B2025/02/05,planning%20as%20well.), where the agent’s actions directly influence future states, reflecting the dynamic nature of real-world driving. Experimental results demonstrate that the proposed approach effectively enhances the performance of lightweight policies.
 </HighlightedSection>
 
-## Visuals
+## Experiments Results Visualization
 
-### Picture
+### Comparisons with baseline
 
-Use the `Picture` component to display images. If you have a figure in PDF format, you can pass in its path as the `src` prop and it will be converted into a web-friendly image automatically.
+{/* Use the `Picture` component to display images. If you have a figure in PDF format, you can pass in its path as the `src` prop and it will be converted into a web-friendly image automatically.
 
-<Picture src={dogsDiffc} alt="Photo of two running dogs, lossily compressed using the DiffC algorithm" />
+<Picture src={dogsDiffc} alt="Photo of two running dogs, lossily compressed using the DiffC algorithm" /> */}
 
-### Wide visual
-
-I constrained the maximum width of the text column to make sure it's readable even when the screen is wide. But images and other visuals should "break out" and take up more horizontal space: for this, try wrapping them in the `Wide` component.
-
-<Wide>
-  <Picture src={dogsDiffc} alt="Photo of two running dogs, lossily compressed using the DiffC algorithm" />
-</Wide>
-
-### Figure with caption
-
-Wrap a visual in a `Figure` component to add a caption.
-
-<Figure>
-  <Picture slot="figure" src={dogsDiffc} alt="Photo of two running dogs, lossily compressed using the DiffC algorithm" />
-  <Fragment slot="caption">A photo of two dogs running side-by-side in shallow water, lossily compressed using the [DiffC algorithm](https://jeremyiv.github.io/diffc-project-page/).</Fragment>
-</Figure>
-
-### Comparison slider
-
-Use the `Comparison` component to compare two visuals with an interactive slider.
-
-<Comparison client:idle >
-  <Picture slot="itemOne" src={dogsDiffc} alt="Photo of two running dogs, lossily compressed using the DiffC algorithm" />
-  <Picture slot="itemTwo" src={dogsTrue} alt="True photo of two dogs running side-by-side in shallow water" />
-</Comparison>
-
-### Tab panels
-
-Tab panels are a great way to display a labeled collection of related visuals without taking up too much space.
-
-<Tabs defaultValue="true">
+<Tabs defaultValue="compare1">
   <TabsList>
-    <TabsTrigger value="true">Ground truth</TabsTrigger>
-    <TabsTrigger value="diffc">DiffC (Flux-dev)</TabsTrigger>
-    <TabsTrigger value="msillm">MS-ILLM</TabsTrigger>
+    <TabsTrigger value="compare1">Signalized Junction Left Turn</TabsTrigger>
+    <TabsTrigger value="compare2">Hard Break Route</TabsTrigger>
+    <TabsTrigger value="compare3">Pedestrian Crossing</TabsTrigger>
   </TabsList>
-  <TabsContent value="true">
-    <Picture
-      src={dogsTrue}
+  <TabsContent value="compare1">
+    <Video
+      src={compare1}
+      square
       alt="True photo of two dogs running side-by-side in shallow water"
     />
   </TabsContent>
-  <TabsContent value="diffc">
-    <Picture
-      src={dogsDiffc}
-      alt="Photo of two running dogs, lossily compressed using the DiffC algorithm"
+  <TabsContent value="compare2">
+    <Video
+      src={compare2}
+      square
+      alt="True photo of two dogs running side-by-side in shallow water"
     />
   </TabsContent>
-  <TabsContent value="msillm">
-    <Picture
-      src={dogsMsillm}
-      alt="Photo of two running dogs, lossily compressed using MS-ILLM"
+  <TabsContent value="compare3">
+    <Video
+      src={compare3}
+      square
+      alt="True photo of two dogs running side-by-side in shallow water"
     />
   </TabsContent>
 </Tabs>
 
-### Carousel
+### Visualization of multiple abilities
 
-A carousel is another useful pattern for a collection of visuals that don't necessarily have meaningful labels.
+<Tabs defaultValue="highway_exit_left">
+  <TabsList>
+    <TabsTrigger value="highway_exit_left">Highway Exit Left</TabsTrigger>
+    <TabsTrigger value="highway_exit_right">Highway Exit Right</TabsTrigger>
+    <TabsTrigger value="park_cut">Parking Cut In</TabsTrigger>
+    <TabsTrigger value="left_turn">Signalized Junction Left Turn</TabsTrigger>
+    <TabsTrigger value="non_sig_junction_right">Non-signalized Junction Right Turn</TabsTrigger>
+    <TabsTrigger value="park_exit">Parking Exit</TabsTrigger>
+    <TabsTrigger value="static_cut">Static Cut In</TabsTrigger>
+    <TabsTrigger value="ped_cross">Pedestrian Crossing</TabsTrigger>
+    <TabsTrigger value="control_loss">Control Loss</TabsTrigger>
+  </TabsList>
+  <TabsContent value="park_cut">
+    <Video
+      src={park_cut}
+      alt="True photo of two dogs running side-by-side in shallow water"
+    />
+  </TabsContent>
+  <TabsContent value="left_turn">
+    <Video
+      src={sig_junction_left}
+      alt="True photo of two dogs running side-by-side in shallow water"
+    />
+  </TabsContent>
+  <TabsContent value="non_sig_junction_right">
+    <Video
+      src={non_sig_junction_right}
+      alt="True photo of two dogs running side-by-side in shallow water"
+    />
+  </TabsContent>
+  <TabsContent value="park_exit">
+    <Video
+      src={park_exit}
+      alt="True photo of two dogs running side-by-side in shallow water"
+    />
+  </TabsContent>
+  <TabsContent value="static_cut">
+    <Video
+      src={static_cut}
+      alt="True photo of two dogs running side-by-side in shallow water"
+    />
+  </TabsContent>
+  <TabsContent value="ped_cross">
+    <Video
+      src={ped_cross}
+      alt="True photo of two dogs running side-by-side in shallow water"
+    />
+  </TabsContent>
+  <TabsContent value="control_loss">
+    <Video
+      src={control_loss}
+      alt="True photo of two dogs running side-by-side in shallow water"
+    />
+  </TabsContent>
+  <TabsContent value="highway_exit_left">
+    <Video
+      src={highway_exit_left}
+      alt="True photo of two dogs running side-by-side in shallow water"
+    />
+  </TabsContent>
+  <TabsContent value="highway_exit_right">
+    <Video
+      src={highway_exit_right}
+      alt="True photo of two dogs running side-by-side in shallow water"
+    />
+  </TabsContent>
+</Tabs>
+
+### BEV-visualization of data in PPO's rollout buffer
 
 <Carousel>
   <CarouselSlide>
-    <Picture src={dogsTrue} alt="True photo of two dogs running side-by-side in shallow water" />
+    <div class="mx-auto w-[24rem] max-w-full">
+      <Picture
+        src={buffer_1}
+        alt="True photo of two dogs running side-by-side in shallow water"
+      />
+    </div>
   </CarouselSlide>
   <CarouselSlide>
-    <Picture src={dogsDiffc} alt="Photo of two running dogs, lossily compressed using the DiffC algorithm" />
+    <div class="mx-auto w-[24rem] max-w-full">
+      <Picture
+        src={buffer_2}
+        alt="True photo of two dogs running side-by-side in shallow water"
+      />
+    </div>
   </CarouselSlide>
   <CarouselSlide>
-    <Picture
-      src={dogsMsillm}
-      alt="Photo of two running dogs, lossily compressed using MS-ILLM"
-    />
+    <div class="mx-auto w-[24rem] max-w-full">
+      <Picture
+        src={buffer_3}
+        alt="True photo of two dogs running side-by-side in shallow water"
+      />
+    </div>
+  </CarouselSlide>
+  <CarouselSlide>
+    <div class="mx-auto w-[24rem] max-w-full">
+      <Picture
+        src={buffer_4}
+        alt="True photo of two dogs running side-by-side in shallow water"
+      />
+    </div>
+  </CarouselSlide>
+  <CarouselSlide>
+    <div class="mx-auto w-[24rem] max-w-full">
+      <Picture
+        src={buffer_5}
+        alt="True photo of two dogs running side-by-side in shallow water"
+      />
+    </div>
+  </CarouselSlide>
+  <CarouselSlide>
+    <div class="mx-auto w-[24rem] max-w-full">
+      <Picture
+        src={buffer_6}
+        alt="True photo of two dogs running side-by-side in shallow water"
+      />
+    </div>
   </CarouselSlide>
 </Carousel>
 
-## Two columns
+<Figure>
+  <Video
+    slot="figure"
+    src={rollout_buffer}
+    square
+    alt="Rollout buffer visualization"
+  />
+  <Fragment slot="caption">
+    BEV visualization of data in PPO's rollout buffer
+  </Fragment>
+</Figure>
 
-Use the two columns component to display two columns of content. In this example, the first column contains a YouTube video embed and the second column contains an interactive 3D model viewer. By default, they display side by side, but if the screen is narrow enough (for example, on mobile), they're arranged vertically.
+## Quantitative Results
 
-<TwoColumns>
-  <YouTubeVideo slot="left" videoId="wjZofJX0v4M" />
-  <ModelViewer slot="right" src="/BoxVertexColors.glb" alt="A cube colored with a rainbow gradient" />
-</TwoColumns>
+| Method | Venue | Scheme | Driving Score ↑ | Success Rate (%) ↑ | Efficiency ↑ | Comfortness ↑ | Latency (ms) | #Params (M) |
+|---|---|---|---:|---:|---:|---:|---:|---:|
+| UniAD-Tiny[@uniad] | CVPR 2023 | IL | 40.73 | 13.18 | 123.92 | 47.04 | 273.3 | - |
+| UniAD-Base[@uniad] | CVPR 2023 | IL | 45.81 | 16.36 | 129.21 | 43.58 | 431.2 | 131.9 |
+| VAD[@jiang2023vad] | ICCV 2023 | IL | 42.35 | 15.00 | 157.94 | 46.01 | 118.0 | 360.0 |
+| TCP[@tcp] | NeurIPS 2022 | IL | 59.90 | 30.00 | 76.54 | 18.08 | **14.11** | **25.8** |
+| DriveTrans[@jia2025drivetransformer] | ICLR 2025 | IL | 63.46 | 35.01 | 100.64 | 20.78 | 137.6 | 646.3 |
+| ThinkTwice[@jia2023thinktwice] | CVPR 2023 | IL | 62.44 | 31.23 | 69.33 | 16.22 | 495.3 | 120.2 |
+| DriveAdapter\*[@jia2023driveadapter] | ICCV 2023 | IL | **64.22** | **33.08** | 70.22 | 16.01 | 605.1 | 135.0 |
+| Ours | - | IL + RL | 62.49 | 30.00 | **162.02** | 24.73 | <u>49.86</u> | <u>27.8</u> |
 
-## $\LaTeX$
+## Our training framework
 
-You can also add $\LaTeX$ formulas, rendered during the build process using [$\KaTeX$](https://katex.org/) so they're quick to load for visitors of your project page. You can write them inline, like this: $a^2 + b^2 = c^2$. Or, you can write them as a block:
-
-$$
-\int_a^b f(x) dx
-$$
-
-## Citation
-
-If you copy your bibliography into `./bibliography.bib`, you can cite papers using their BibTeX keys, and they'll be automatically formatted and included in the bibliography section at the end. For example: [@vaswani2017attention]. Note that these citations are distinct from footnotes[^mynote], which show up in a separate section if you use them.
-
-[^mynote]: On the web, they should really be called "endnotes", since each page constitutes a full document.
-
-## Table
-
-Add simple tables using [GitHub Flavored Markdown syntax](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-tables):
-
-| Model | Accuracy | F1 score | Training time (hours) |
-| :--- | :---: | :---: | :---: |
-| BERT-base | 0.89 | 0.87 | 4.5 |
-| RoBERTa-large | 0.92 | 0.91 | 7.2 |
-| DistilBERT | 0.86 | 0.84 | 2.1 |
-| XLNet | 0.90 | 0.89 | 6.8 |
-
-## BibTeX citation
-
-Displaying the BibTeX entry for your paper in a code block makes it easy to copy and paste.
-
-```bibtex
-@misc{roman2024academic,
-  author = "{Roman Hauksson}",
-  title = "Academic Project Page Template",
-  year = "2024",
-  howpublished = "\url{https://research-template.roman.technology}",
-}
-```
+<Wide>
+  <Picture
+    src={framework}
+    alt="True photo of two dogs running side-by-side in shallow water"
+  />
+</Wide>
 
 ## Bibliography
-
 [^ref]
