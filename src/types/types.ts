@@ -10,6 +10,7 @@ export type Link = {
   url: string;
   name: string;
   icon?: string;
+  fromPublic?: boolean;
 };
 
 export type Note = {

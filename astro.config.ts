@@ -13,6 +13,7 @@ import astroExpressiveCode from "astro-expressive-code";
 
 // https://astro.build/config
 export default defineConfig({
+  base: "/Thesis-Website/",
   vite: {
     plugins: [tailwindcss()],
   },
