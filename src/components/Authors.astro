@@ -8,15 +8,15 @@ interface Props {
 const { authors } = Astro.props;
 ---
 
-<div class="links flex w-full flex-col flex-wrap items-center gap-x-8 gap-y-4">
+<div class="grid w-full grid-cols-1 gap-x-12 gap-y-6 sm:grid-cols-2">
   {
     authors.map((author) => (
-      <div class="flex flex-col items-start text-left">
-        <div class="flex flex-row text-xl">
-          {author.role && <strong class="mr-1">{author.role}:</strong>}
+      <div class="flex flex-col items-center text-center leading-snug">
+        <div class="text-lg font-semibold">
+          {author.role && <span class="mr-1">{author.role}:</span>}
           {author.url ? <a href={author.url}>{author.name}</a> : author.name}
           {author.notes && (
-            <sup class="text-xl">
+            <sup>
               {author.notes.map(
                 (note, index, array) =>
                   note + (index < array.length - 1 ? "," : ""),
@@ -24,7 +24,19 @@ const { authors } = Astro.props;
             </sup>
           )}
         </div>
-        {author.institution && <div>{author.institution}</div>}
+        {author.institution && <div class="italic">{author.institution}</div>}
+        {author.affiliation?.map((line) => (
+          <div class="italic">{line}</div>
+        ))}
+        {author.location && <div>{author.location}</div>}
+        {author.orcid && (
+          <div>
+            ORCID:{" "}
+            <a class="italic" href={`https://orcid.org/${author.orcid}`}>
+              {author.orcid}
+            </a>
+          </div>
+        )}
       </div>
     ))
   }

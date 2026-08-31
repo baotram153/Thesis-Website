@@ -1,0 +1,203 @@
+---
+import type { ResultsColumn, ResultsRow } from "../types/types";
+
+interface Props {
+  columns: ResultsColumn[];
+  rows: ResultsRow[];
+}
+
+const { columns, rows } = Astro.props;
+
+// Split a cell into its numeric part and any trailing marker (e.g. "118.0†").
+function splitCell(raw: string | number | boolean | null | undefined) {
+  if (raw === null || raw === undefined || raw === "") {
+    return { text: "—", marker: "", value: NaN };
+  }
+  const text = String(raw);
+  const match = text.match(/^(-?[\d.,]+)(.*)$/);
+  if (!match) return { text, marker: "", value: NaN };
+  return {
+    text: match[1],
+    marker: match[2].trim(),
+    value: parseFloat(match[1].replace(/,/g, "")),
+  };
+}
+
+// Rank the distinct values of each measured column so that ties share a rank.
+// Rank 1 → bold, 2 → underline, 3 → dotted underline, as in the paper.
+const rankClass = ["font-bold", "underline", "underline decoration-dotted"];
+
+const ranking = new Map<string, Map<number, number>>();
+for (const column of columns) {
+  if (!column.arrow) continue;
+  const lowerIsBetter = column.arrow === "down";
+
+  const values = rows
+    .filter((row) => !row.excludeFromRanking)
+    .map((row) => splitCell(row[column.key]).value)
+    .filter((value) => Number.isFinite(value));
+
+  const distinct = [...new Set(values)].sort((a, b) =>
+    lowerIsBetter ? a - b : b - a,
+  );
+
+  ranking.set(
+    column.key,
+    new Map(distinct.slice(0, 3).map((value, index) => [value, index + 1])),
+  );
+}
+
+function rankOf(column: ResultsColumn, row: ResultsRow) {
+  if (row.excludeFromRanking) return undefined;
+  return ranking.get(column.key)?.get(splitCell(row[column.key]).value);
+}
+
+// Header model: ungrouped columns span both header rows; consecutive columns
+// sharing a `group` collapse into one spanning cell above their own labels.
+type HeaderCell =
+  | { kind: "plain"; column: ResultsColumn }
+  | { kind: "group"; label: string; span: number; rule: boolean };
+
+const headerCells: HeaderCell[] = [];
+for (const column of columns) {
+  const previous = headerCells.at(-1);
+  if (!column.group) {
+    headerCells.push({ kind: "plain", column });
+  } else if (
+    previous?.kind === "group" &&
+    previous.label === column.group &&
+    !column.rule
+  ) {
+    previous.span += 1;
+  } else {
+    headerCells.push({
+      kind: "group",
+      label: column.group,
+      span: 1,
+      rule: Boolean(column.rule),
+    });
+  }
+}
+
+// Slot names have to be static in markup, so each row's `method-<id>` slot is
+// rendered up front. This keeps the method labels in the MDX file, where the
+// `[@key]` citation syntax is still processed by rehype-citation.
+const methodLabels = new Map<string, string>();
+for (const row of rows) {
+  const name = `method-${row.id}`;
+  if (Astro.slots.has(name)) {
+    methodLabels.set(row.id, await Astro.slots.render(name));
+  }
+}
+
+const ruleClass = "border-l border-l-current/25";
+const alignClass = (column: ResultsColumn) =>
+  column.align === "left" ? "text-left" : "text-right tabular-nums";
+---
+
+<div class="not-prose full-bleed my-8 overflow-x-auto px-6 text-base">
+  <table class="mx-auto w-auto border-collapse">
+    <thead>
+      <tr class="border-t-2 border-b border-t-current/70 border-b-current/20">
+        {
+          headerCells.map((cell) =>
+            cell.kind === "plain" ? (
+              <th
+                rowspan={2}
+                scope="col"
+                class:list={[
+                  "px-3 py-2 align-bottom font-bold whitespace-nowrap",
+                  alignClass(cell.column),
+                  cell.column.rule && ruleClass,
+                ]}
+              >
+                {cell.column.label}
+              </th>
+            ) : (
+              <th
+                colspan={cell.span}
+                scope="colgroup"
+                class:list={[
+                  "px-3 pt-2 pb-1 text-center font-bold",
+                  cell.rule && ruleClass,
+                ]}
+              >
+                {cell.label}
+              </th>
+            ),
+          )
+        }
+      </tr>
+      <tr class="border-b border-b-current/40">
+        {
+          columns
+            .filter((column) => column.group)
+            .map((column) => (
+              <th
+                scope="col"
+                class:list={[
+                  "px-3 pt-1 pb-2 font-normal whitespace-nowrap",
+                  column.align === "left" ? "text-left" : "text-right",
+                  column.rule && ruleClass,
+                ]}
+              >
+                {column.label}
+                {column.arrow === "up" && " ↑"}
+                {column.arrow === "down" && " ↓"}
+              </th>
+            ))
+        }
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr
+            class:list={[row.separatorBefore && "border-t border-t-current/40"]}
+          >
+            {columns.map((column, index) => {
+              const cell = splitCell(row[column.key]);
+              const rank = rankOf(column, row);
+              return index === 0 ? (
+                <th
+                  scope="row"
+                  class:list={[
+                    "px-3 py-1.5 text-left whitespace-nowrap",
+                    row.emphasize ? "font-bold" : "font-normal",
+                    "[&_p]:m-0 [&_p]:inline",
+                  ]}
+                  set:html={methodLabels.get(row.id) ?? row[column.key] ?? ""}
+                />
+              ) : (
+                <td
+                  class:list={[
+                    "px-3 py-1.5",
+                    alignClass(column),
+                    column.rule && ruleClass,
+                    rank && rankClass[rank - 1],
+                  ]}
+                >
+                  {cell.text}
+                  {cell.marker && (
+                    // inline-block keeps the rank underline off the marker
+                    <sup class="inline-block font-normal no-underline">
+                      {cell.marker}
+                    </sup>
+                  )}
+                </td>
+              );
+            })}
+          </tr>
+        ))
+      }
+    </tbody>
+    <tfoot>
+      <tr class="border-t-2 border-t-current/70">
+        <td colspan={columns.length} class="p-0"></td>
+      </tr>
+    </tfoot>
+  </table>
+  <div class="mx-auto mt-3 max-w-[50rem] text-center text-sm opacity-70">
+    <slot name="legend" />
+  </div>
+</div>

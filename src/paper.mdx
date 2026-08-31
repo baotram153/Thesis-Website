@@ -1,11 +1,36 @@
 ---
-title: Teacher-Student Model for Motion Planning in Autonomous Driving
+title: "Distillation Is Not Enough: Reinforcement Fine-Tuning for Closed-Loop Robustness of Lightweight End-to-End Driving Policies"
 authors:
-  - role: Student
-    name: Dang Ngoc Bao Tram
-  - role: Supervisor
-    name: Nguyen Duc Dung
+  - name: Bao Tram Dang Ngoc
+    affiliation:
+      - AITech Lab., Faculty of Computer Science and Engineering
+      - Ho Chi Minh City University of Technology (HCMUT)
+    location: Ho Chi Minh City, Vietnam
+    orcid: 0009-0009-2657-2430
+  - name: Trung Thai Tran
+    affiliation:
+      - AITech Lab., Faculty of Computer Science and Engineering
+      - Ho Chi Minh City University of Technology (HCMUT)
+    location: Ho Chi Minh City, Vietnam
+    orcid: 0009-0002-1422-9685
+  - name: Tri Huynh Minh
+    affiliation:
+      - AITech Lab., Faculty of Computer Science and Engineering
+      - Ho Chi Minh City University of Technology (HCMUT)
+    location: Ho Chi Minh City, Vietnam
+    orcid: 0009-0005-4078-9530
+  - name: Duc Dung Nguyen
+    notes:
+      - "*"
+    affiliation:
+      - AITech Lab., Faculty of Computer Science and Engineering
+      - Ho Chi Minh City University of Technology (HCMUT)
+    location: Ho Chi Minh City, Vietnam
+    orcid: 0000-0001-7321-7401
 conference:
+notes:
+  - symbol: "*"
+    text: Corresponding author
 links:
   - name: Report
     url: /files/dissertation.pdf
@@ -45,6 +70,7 @@ import YouTubeVideo from "./components/YouTubeVideo.astro";
 import Carousel from "./components/Carousel.astro";
 import CarouselSlide from "./components/CarouselSlide.astro";
 import Wide from "./components/Wide.astro";
+import ResultsTable from "./components/ResultsTable.astro";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/starwind/tabs";
 import { Comparison } from "./components/Comparison.tsx";
 
@@ -84,11 +110,8 @@ import framework from "@/assets/training_framework.png"
 
 ## Abstract
 
-[End-to-end autonomous driving](https://github.com/opendrivelab/end-to-end-autonomous-driving) policies have demonstrated strong performance by directly mapping raw sensor observations to low-level control commands. However, many state-of-the-art models rely on large network architectures and extensive computational resources, limiting their applicability in real-time and embedded systems. This thesis focuses on the development of a **lightweight end-to-end driving policy** that achieves **competitive performance** while significantly reducing model complexity.
+End-to-end driving policies map raw sensor inputs directly to future waypoints or control commands, yet state-of-the-art models rely on large backbones whose latency and memory footprint preclude real-time deployment. While imitation learning and knowledge distillation can produce lightweight policies, they suffer from severe closed-loop degradation caused by distribution shift and causal confusion. We address this limitation through a three-stage training framework that synergistically combines imitation pre-training, knowledge distillation, and reinforcement learning fine-tuning, preserving the sample efficiency of supervised learning while achieving on-policy robustness. Our principal technical contributions are two-fold. First, we design a dense reward function that jointly optimizes safety, efficiency, and smoothness through context-aware target-speed modulation based on hazard proximity and road curvature. Second, we introduce an auxiliary guidance loss that propagates terminal-event feedback backward to preceding transitions, enabling more effective credit assignment and exploration during RL fine-tuning. On the Bench2Drive220 benchmark, our 26.4M-parameter policy achieves a Driving Score of 62.49 at 49.86ms latency—delivering the best performance-efficiency trade-off among all compared methods, with every higher-scoring alternative being several times larger and slower.
 
-We propose a training framework that combines [knowledge distillation](https://arxiv.org/pdf/2006.05525) and [reinforcement learning](https://web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf) fine-tuning to bridge the performance gap between high-capacity teacher models and efficient student policies. In the distillation stage, a compact student network is trained to imitate the behavior of a stronger teacher. This process provides a stable baseline that mitigates optimization difficulty and reduces sample inefficiency during subsequent learning. After that, we further refine the student model through reinforcement learning fine-tuning. By allowing direct interaction with the environment, reinforcement learning enables the policy to adapt beyond imitation, improving [robustness and causal reasoning](https://arxiv.org/pdf/2306.16927#subsection.4.8) while preserving the efficiency of the lightweight architecture. This combination allows the student to retain the teacher’s structured behavior while autonomously optimizing performance under closed-loop feedback.
-
-All methods are evaluated in a [closed-loop simulation environment](https://github.com/Thinklab-SJTU/Bench2Drive#:~:text=%5B2025/02/05,planning%20as%20well.), where the agent’s actions directly influence future states, reflecting the dynamic nature of real-world driving. Experimental results demonstrate that the proposed approach effectively enhances the performance of lightweight policies.
 </HighlightedSection>
 
 ## Experiments Results Visualization
@@ -265,16 +288,38 @@ All methods are evaluated in a [closed-loop simulation environment](https://gith
 
 ## Quantitative Results
 
-| Method | Venue | Scheme | Driving Score ↑ | Success Rate (%) ↑ | Efficiency ↑ | Comfortness ↑ | Latency (ms) | #Params (M) |
-|---|---|---|---:|---:|---:|---:|---:|---:|
-| UniAD-Tiny[@uniad] | CVPR 2023 | IL | 40.73 | 13.18 | 123.92 | 47.04 | 273.3 | - |
-| UniAD-Base[@uniad] | CVPR 2023 | IL | 45.81 | 16.36 | 129.21 | 43.58 | 431.2 | 131.9 |
-| VAD[@jiang2023vad] | ICCV 2023 | IL | 42.35 | 15.00 | 157.94 | 46.01 | 118.0 | 360.0 |
-| TCP[@tcp] | NeurIPS 2022 | IL | 59.90 | 30.00 | 76.54 | 18.08 | **14.11** | **25.8** |
-| DriveTrans[@jia2025drivetransformer] | ICLR 2025 | IL | 63.46 | 35.01 | 100.64 | 20.78 | 137.6 | 646.3 |
-| ThinkTwice[@jia2023thinktwice] | CVPR 2023 | IL | 62.44 | 31.23 | 69.33 | 16.22 | 495.3 | 120.2 |
-| DriveAdapter\*[@jia2023driveadapter] | ICCV 2023 | IL | **64.22** | **33.08** | 70.22 | 16.01 | 605.1 | 135.0 |
-| Ours | - | IL + RL | 62.49 | 30.00 | **162.02** | 24.73 | <u>49.86</u> | <u>27.8</u> |
+<ResultsTable
+  columns={[
+    { key: "method", label: "Method", align: "left" },
+    { key: "venue", label: "Venue", align: "left", rule: true },
+    { key: "ds", label: "Driving Score", group: "Closed-loop Metric", arrow: "up", rule: true },
+    { key: "sr", label: "Succ. Rate (%)", group: "Closed-loop Metric", arrow: "up" },
+    { key: "effic", label: "Effic.", group: "Closed-loop Metric", arrow: "up" },
+    { key: "comfort", label: "Comfort.", group: "Closed-loop Metric", arrow: "up" },
+    { key: "latency", label: "Latency (ms)", group: "Efficiency", arrow: "down", rule: true },
+    { key: "params", label: "#Param. (M)", group: "Efficiency", arrow: "down" },
+  ]}
+  rows={[
+    { id: "uniad-base", venue: "CVPR 2023", ds: "45.81", sr: "16.36", effic: "129.21", comfort: "43.58", latency: "431.2", params: "131.9" },
+    { id: "vad", venue: "ICCV 2023", ds: "42.35", sr: "15.00", effic: "157.94", comfort: "46.01", latency: "118.0", params: "360.0" },
+    { id: "tcp", venue: "NeurIPS 2022", ds: "59.90", sr: "30.00", effic: "76.54", comfort: "18.08", latency: "14.11", params: "25.8" },
+    { id: "drivetrans", venue: "ICLR 2025", ds: "63.46", sr: "35.01", effic: "100.64", comfort: "20.78", latency: "147.6", params: "646.3" },
+    { id: "thinktwice", venue: "CVPR 2023", ds: "62.44", sr: "31.23", effic: "69.33", comfort: "16.22", latency: "495.3", params: "120.2" },
+    { id: "driveadapter", venue: "ICCV 2023", ds: "64.22", sr: "33.08", effic: "70.22", comfort: "16.01", latency: "605.1", params: "135.0" },
+    { id: "ours", venue: "—", ds: "62.49", sr: "30.00", effic: "129.02", comfort: "24.73", latency: "49.86", params: "26.4", separatorBefore: true, emphasize: true },
+  ]}
+>
+  <Fragment slot="method-uniad-base">UniAD-Base [@uniad]</Fragment>
+  <Fragment slot="method-vad">VAD [@jiang2023vad]</Fragment>
+  <Fragment slot="method-tcp">TCP [@tcp]</Fragment>
+  <Fragment slot="method-drivetrans">DriveTrans. [@jia2025drivetransformer]</Fragment>
+  <Fragment slot="method-thinktwice">ThinkTwice [@jia2023thinktwice]</Fragment>
+  <Fragment slot="method-driveadapter">DriveAdapter [@jia2023driveadapter]</Fragment>
+  <Fragment slot="method-ours">**Ours**</Fragment>
+  <Fragment slot="legend">
+    **Bold** = best, <u>underline</u> = second best, <u style="text-decoration-style: dotted">dotted</u> = third best.
+  </Fragment>
+</ResultsTable>
 
 ## Our training framework
 
